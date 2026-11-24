@@ -31,12 +31,17 @@ jobs:
       - name: Generate Android project
         run: npx expo prebuild --platform android --no-install
 
-      - name: Build APK
+      - name: Bundle JS into Android assets
+        run: |
+          mkdir -p android/app/src/main/assets
+          npx expo export:embed --platform android --entry-file index.ts --bundle-output android/app/src/main/assets/index.android.bundle --assets-dest android/app/src/main/res
+
+      - name: Build Signed APK
         working-directory: android
-        run: ./gradlew assembleRelease
+        run: ./gradlew assembleDebug
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
           name: Library-App-APK
-          path: android/app/build/outputs/apk/release/app-release.apk
+          path: android/app/build/outputs/apk/debug/app-debug.apk
